@@ -31,6 +31,9 @@ export class User {
   @Column({ default: '' })
   phone_number: string;
 
+  @Column({ default: '' })
+  reset_password_token: string;
+
   @Column({
     type: 'enum',
     enum: UserRole,

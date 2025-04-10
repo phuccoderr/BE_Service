@@ -11,11 +11,14 @@ import { RegisterUserDto, UpdateUserDto, UserDto } from 'src/dto/user.dto';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { plainToClass } from 'class-transformer';
+import { v4 as uuidv4 } from 'uuid';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class UserService implements OnModuleInit {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
+    private readonly mailService: MailService,
   ) {}
 
   // Register User
@@ -49,6 +52,42 @@ export class UserService implements OnModuleInit {
       throw new NotFoundException('User not found');
     }
     return plainToClass(UserDto, user);
+  }
+
+  async forgotPassword(email: string) {
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user) {
+      throw new NotFoundException('Không tìm thấy user');
+    }
+
+    const token = uuidv4();
+
+    await this.userRepository.update(user.id, {
+      reset_password_token: token,
+    });
+
+    await this.mailService.forgotPassword(
+      email,
+      `http://localhost:5173/reset-password?token=${token}`,
+    );
+
+    return user;
+  }
+
+  async resetPassswordToken(token: string, password: string) {
+    const user = await this.userRepository.findOne({
+      where: { reset_password_token: token },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Không tìm thấy user');
+    }
+
+    const hashPassword = bcrypt.hashSync(password, 10);
+    return this.userRepository.update(user.id, {
+      password: hashPassword,
+      reset_password_token: '',
+    });
   }
 
   // Init in DB

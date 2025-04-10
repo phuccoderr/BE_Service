@@ -12,12 +12,18 @@ import {
   ApiBearerAuth,
   ApiOperation,
   ApiParam,
+  ApiProperty,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
 import { ApiResponseFormat } from 'src/common/dto/api-response.dto';
-import { RegisterUserDto, UpdateUserDto } from 'src/dto/user.dto';
+import {
+  ForgotPasswordDto,
+  RegisterUserDto,
+  ResetPasswordDto,
+  UpdateUserDto,
+} from 'src/dto/user.dto';
 import { UserService } from 'src/user/user.service';
 
 @ApiTags('User')
@@ -66,5 +72,36 @@ export class UserController {
     const data = await this.userService.findOneById(id);
 
     return new ApiResponseFormat(200, 'success', data);
+  }
+
+  @Post('forgot_password')
+  @ApiOperation({ summary: 'Forgot Pasword' })
+  @ApiResponse({
+    status: 200,
+    description: 'info user',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'not found user',
+  })
+  forgotPassword(@Body() forgotPwDto: ForgotPasswordDto) {
+    return this.userService.forgotPassword(forgotPwDto.email);
+  }
+
+  @Post('reset_password')
+  @ApiOperation({ summary: 'Forgot Pasword' })
+  @ApiResponse({
+    status: 200,
+    description: 'info user',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'not found user',
+  })
+  resetPassswordToken(@Body() resetPwDto: ResetPasswordDto) {
+    return this.userService.resetPassswordToken(
+      resetPwDto.token,
+      resetPwDto.password,
+    );
   }
 }

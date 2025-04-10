@@ -90,3 +90,19 @@ export class UserDto {
   @Exclude()
   password: string;
 }
+
+export class ForgotPasswordDto {
+  @ApiProperty({ description: 'email', example: 'email' })
+  @IsNotEmpty()
+  email: string;
+}
+
+export class ResetPasswordDto {
+  @ApiProperty({ description: 'token', example: 'token' })
+  @IsNotEmpty()
+  token: string;
+
+  @ApiProperty({ description: 'password', example: 'password' })
+  @IsNotEmpty()
+  password: string;
+}
