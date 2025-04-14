@@ -13,13 +13,14 @@ export class NotificationService {
     private readonly notificationRepository: Repository<Notification>,
   ) {}
 
-  async createNotification(subscription: Subscription) {
+  async createNotification(subscription: Subscription, message?: string) {
     try {
       await this.notificationRepository.save({
         subscription: subscription,
         created_at: Math.floor(Date.now() / 1000),
         user: subscription.user,
         message:
+          message ??
           'Đăng ký của bạn sẽ hết hạn sau 1 ngày. Vui lòng gia hạn đăng ký của bạn.',
         is_read: false,
       });

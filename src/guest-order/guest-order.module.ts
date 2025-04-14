@@ -6,6 +6,7 @@ import { GuestOrder } from 'src/database/entity/guest-order.entity';
 import { Subscription } from 'src/database/entity/subscription.entity';
 import { GuestOrderController } from 'src/guest-order/guest-order.controller';
 import { GuestOrderService } from 'src/guest-order/guest-order.service';
+import { NotificationModule } from 'src/notification/notification.module';
 import { SubscriptionModule } from 'src/subscription/subscription.module';
 import { UserModule } from 'src/user/user.module';
 
@@ -15,6 +16,7 @@ import { UserModule } from 'src/user/user.module';
     CartItemModule,
     UserModule,
     SubscriptionModule,
+    NotificationModule,
   ],
   controllers: [GuestOrderController],
   providers: [GuestOrderService],

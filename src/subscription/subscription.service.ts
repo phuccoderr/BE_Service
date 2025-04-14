@@ -23,28 +23,38 @@ export class SubscriptionService {
 
   async createSubscription(guestOrder: GuestOrderDto) {
     try {
-      guestOrder.guest_order_item.map(async (item) => {
-        const startDate = Math.floor(Date.now() / 1000);
+      return await Promise.all(
+        guestOrder.guest_order_item.map(async (item) => {
+          const startDate = Math.floor(Date.now() / 1000);
 
-        const currentDate = new Date();
-        currentDate.setMonth(
-          currentDate.getMonth() + item.subscription_duration.months,
-        );
-        const endDate = Math.floor(currentDate.getTime() / 1000);
+          const currentDate = new Date();
+          currentDate.setMonth(
+            currentDate.getMonth() + item.subscription_duration.months,
+          );
+          const endDate = Math.floor(currentDate.getTime() / 1000);
 
-        await this.subscriptionRepository.save({
-          user: guestOrder.user,
-          package: item.package,
-          guest_order_item: item,
-          subscription_duration: item.subscription_duration,
-          start_date: startDate,
-          end_date: endDate,
-          status: 'active',
-          data_remaining: item.package.data_amount,
-        });
-      });
+          return await this.subscriptionRepository.save({
+            user: guestOrder.user,
+            package: item.package,
+            guest_order_item: item,
+            subscription_duration: item.subscription_duration,
+            start_date: startDate,
+            end_date: endDate,
+            status: 'active',
+            data_remaining: item.package.data_amount,
+          });
+        }),
+      );
     } catch (error) {
       throw new UnprocessableEntityException('Cannot create subscription');
+    }
+  }
+
+  async updateStatus(id: number, status: string) {
+    try {
+      await this.subscriptionRepository.update(id, { status: status });
+    } catch (error) {
+      throw new UnprocessableEntityException('Cannot update subscription');
     }
   }
 

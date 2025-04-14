@@ -12,6 +12,7 @@ import { GuestOrder } from 'src/database/entity/guest-order.entity';
 import { GuestOrderItemDto } from 'src/dto/guest-order-item.dto';
 import { CreateGuestOrderDto, GuestOrderDto } from 'src/dto/guest-order.dto';
 import { PackageDto } from 'src/dto/package.dto';
+import { NotificationService } from 'src/notification/notification.service';
 import { SubscriptionService } from 'src/subscription/subscription.service';
 import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
@@ -23,6 +24,7 @@ export class GuestOrderService {
     private readonly guestOrderRepository: Repository<GuestOrder>,
     @InjectRepository(GuestOrderItem)
     private readonly guestOrderItemRepository: Repository<GuestOrderItem>,
+    private readonly notificationService: NotificationService,
     private readonly subscriptionService: SubscriptionService,
     private readonly cartItemService: CartItemService,
     private readonly userService: UserService,
@@ -86,7 +88,16 @@ export class GuestOrderService {
 
       if (status === 'completed') {
         const guestOrder = await this.findOneById(id);
-        await this.subscriptionService.createSubscription(guestOrder);
+        const listSubscriptions =
+          await this.subscriptionService.createSubscription(guestOrder);
+        console.log(listSubscriptions);
+        listSubscriptions.forEach(
+          async (item) =>
+            await this.notificationService.createNotification(
+              item,
+              'Đăng ký gói cước thành công, cảm ơn bạn',
+            ),
+        );
       }
     } catch (error) {
       console.log(error);

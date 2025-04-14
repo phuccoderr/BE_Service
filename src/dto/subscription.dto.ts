@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, Min } from 'class-validator';
+import { IsNumber, IsString, Min } from 'class-validator';
 import { Package } from 'src/database/entity/packages.entity';
 
 enum SubscriptionStatus {
@@ -12,6 +12,12 @@ export class CreateSubscriptionDto {
   @Min(1)
   @ApiProperty({ description: 'guest order id', example: 1 })
   guest_order_id: number;
+}
+
+export class UpdateSubscriptionDto {
+  @IsString()
+  @ApiProperty({ description: 'status', example: 'active' })
+  status: SubscriptionStatus;
 }
 
 export class SubscriptionDto {
